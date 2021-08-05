@@ -15,7 +15,6 @@ type AssetDataResponse struct {
 
 type QuoteResponse struct {
 	Result []AssetDataResponse `json:"result"`
-
 }
 
 type YahooResp struct {
@@ -29,15 +28,15 @@ func main() {
 	initDB()
 	var assets []Asset
 	err := Database.Model(&assets).Select()
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 	if len(assets) < 1 {
 		log.Println("No assets found in database, exiting.")
 		os.Exit(0)
 	}
 	c := make(chan map[string]float64)
-	for _ ,asset := range assets {
+	for _, asset := range assets {
 		go getAssetPrice(asset.Ticker, c)
 	}
 	// keeps track of goroutine count
@@ -51,12 +50,12 @@ func main() {
 			close(c)
 		}
 	}
-	
+
 }
 func updateAssetPrice(asset map[string]float64) {
 	var key string
 	var value float64
-	for k,v := range asset { // TODO has to be a better way..?
+	for k, v := range asset { // TODO has to be a better way..?
 		key = k
 		value = v
 	}
@@ -67,7 +66,6 @@ func updateAssetPrice(asset map[string]float64) {
 	if err != nil {
 		panic(err)
 	}
-
 
 }
 func getAssetPrice(ticker string, c chan map[string]float64) {
@@ -84,7 +82,7 @@ func getAssetPrice(ticker string, c chan map[string]float64) {
 	}
 	json.Unmarshal(body, &data)
 	m := make(map[string]float64)
-	m[ticker] =  data.QuoteResponse.Result[0].RegularMarketPrice
+	m[ticker] = data.QuoteResponse.Result[0].RegularMarketPrice
 	// send map back through channel
 	c <- m
 }
