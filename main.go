@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 type AssetDataResponse struct {
@@ -37,12 +38,11 @@ func main() {
 	}
 	c := make(chan map[string]float64)
 	for _, asset := range assets {
-		go getAssetPrice(asset.Ticker, c)
+		go getAssetPrice(asset.Ticker, c) // TODO what happens with many requests?
 	}
 	// keeps track of goroutine count
 	count := 0
 	for msg := range c {
-		fmt.Println(msg)
 		updateAssetPrice(msg)
 		// increment after update
 		count++
@@ -50,6 +50,7 @@ func main() {
 			close(c)
 		}
 	}
+	// calc net worth
 
 }
 func updateAssetPrice(asset map[string]float64) {
@@ -59,14 +60,17 @@ func updateAssetPrice(asset map[string]float64) {
 		key = k
 		value = v
 	}
+	dt := time.Now()
+	fmt.Println(dt)
 	model := &Asset{
-		Price: value,
+		Price:     value,
+		UpdatedAt: dt,
 	}
-	_, err := Database.Model(model).Column("price").Where("asset.ticker = ?", key).Update()
+	var id string
+	_, err := Database.Model(model).Column("price").Column("updated_at").Where("asset.ticker = ?", key).Returning("id").Update(&id)
 	if err != nil {
 		panic(err)
 	}
-
 }
 func getAssetPrice(ticker string, c chan map[string]float64) {
 	url := YahooBaseUrl + ticker

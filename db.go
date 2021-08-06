@@ -37,5 +37,4 @@ func createSchema() {
 	if err != nil {
 		panic(err)
 	}
-
 }
