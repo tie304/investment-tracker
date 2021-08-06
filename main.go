@@ -50,7 +50,6 @@ func main() {
 			close(c)
 		}
 	}
-	// calc net worth
 
 }
 func updateAssetPrice(asset map[string]float64) {
@@ -67,7 +66,25 @@ func updateAssetPrice(asset map[string]float64) {
 		UpdatedAt: dt,
 	}
 	var id string
-	_, err := Database.Model(model).Column("price").Column("updated_at").Where("asset.ticker = ?", key).Returning("id").Update(&id)
+	var price string
+	var qty string
+	_, err := Database.Model(model).Column("price").Column("updated_at").Where("asset.ticker = ?", key).Returning("id, price, qty").Update(&id, &price, &qty)
+	if err != nil {
+		panic(err)
+	}
+
+	tableName := "asset_" + id
+	createTimeseriesAssetTable(tableName)
+	insertIntoTimeSeriesTable(tableName, price, qty)
+}
+func createTimeseriesAssetTable(tableName string) {
+	_, err := Database.Exec("CREATE TABLE IF NOT EXISTS " + tableName + " (price NUMERIC, qty NUMERIC, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP);")
+	if err != nil {
+		panic(err)
+	}
+}
+func insertIntoTimeSeriesTable(tableName string, price string, qty string) {
+	_, err := Database.Exec("INSERT INTO " + tableName + " (price, qty) VALUES (" + price + ", " + qty + ");")
 	if err != nil {
 		panic(err)
 	}
