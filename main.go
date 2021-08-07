@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -50,6 +49,7 @@ func main() {
 			close(c)
 		}
 	}
+	log.Println("finished updating job")
 
 }
 func updateAssetPrice(asset map[string]float64) {
@@ -60,7 +60,6 @@ func updateAssetPrice(asset map[string]float64) {
 		value = v
 	}
 	dt := time.Now()
-	fmt.Println(dt)
 	model := &Asset{
 		Price:     value,
 		UpdatedAt: dt,
