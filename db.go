@@ -13,10 +13,10 @@ var Database *pg.DB
 
 func initDB() {
 	db := pg.Connect(&pg.Options{
-		Addr:     os.Getenv("database_host"),
-		User:     os.Getenv("database_user"),
-		Password: os.Getenv("database_password"),
-		Database: os.Getenv("database_name"),
+		Addr:     os.Getenv("DATABASE_HOST"),
+		User:     os.Getenv("DATABASE_USER"),
+		Password: os.Getenv("DATABASE_PASSWORD"),
+		Database: os.Getenv("DATABASE_NAME"),
 	})
 	Database = db
 	ctx := context.Background()
