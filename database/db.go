@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 
 var Database *pg.DB
 
-func initDB() {
+func InitDB() {
 	db := pg.Connect(&pg.Options{
 		Addr:     os.Getenv("DATABASE_HOST"),
 		User:     os.Getenv("DATABASE_USER"),

@@ -1,0 +1,5 @@
+export DATABASE_NAME=test
+export DATABASE_USER=$DATABASE_NAME
+export DATABASE_PASSWORD=1234
+export DATABASE_HOST=localhost:5432
+go run main.go

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/tie304/investment/database"
 )
 
 type AssetDataResponse struct {
@@ -22,14 +24,14 @@ type YahooResp struct {
 }
 
 const YahooBaseUrl = "https://query1.finance.yahoo.com/v7/finance/quote?=&symbols="
-
 func main() {
 	log.Println("main started")
-	initDB()
+	database.InitDB()
+	db := database.Database
 	for {
 		log.Println("updating asset prices]")
-		var assets []Asset
-		err := Database.Model(&assets).Select()
+		var assets []database.Asset
+		err := db.Model(&assets).Select()
 		if err != nil {
 			panic(err)
 		}
@@ -69,14 +71,14 @@ func updateAssetPrice(asset map[string]float64) {
 		value = v
 	}
 	dt := time.Now()
-	model := &Asset{
+	model := &database.Asset{
 		Price:     value,
 		UpdatedAt: dt,
 	}
 	var id string
 	var price string
 	var qty string
-	_, err := Database.Model(model).Column("price").Column("updated_at").Where("asset.ticker = ?", key).Returning("id, price, qty").Update(&id, &price, &qty)
+	_, err := database.Database.Model(model).Column("price").Column("updated_at").Where("asset.ticker = ?", key).Returning("id, price, qty").Update(&id, &price, &qty)
 	if err != nil {
 		panic(err)
 	}
@@ -86,13 +88,13 @@ func updateAssetPrice(asset map[string]float64) {
 	insertIntoTimeSeriesTable(tableName, price, qty)
 }
 func createTimeseriesAssetTable(tableName string) {
-	_, err := Database.Exec("CREATE TABLE IF NOT EXISTS " + tableName + " (price NUMERIC, qty NUMERIC, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP);")
+	_, err := database.Database.Exec("CREATE TABLE IF NOT EXISTS " + tableName + " (price NUMERIC, qty NUMERIC, updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP);")
 	if err != nil {
 		panic(err)
 	}
 }
 func insertIntoTimeSeriesTable(tableName string, price string, qty string) {
-	_, err := Database.Exec("INSERT INTO " + tableName + " (price, qty) VALUES (" + price + ", " + qty + ");")
+	_, err := database.Database.Exec("INSERT INTO " + tableName + " (price, qty) VALUES (" + price + ", " + qty + ");")
 	if err != nil {
 		panic(err)
 	}
