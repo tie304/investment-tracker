@@ -29,7 +29,7 @@ func main() {
 	database.InitDB()
 	db := database.Database
 	for {
-		log.Println("updating asset prices]")
+		log.Println("updating asset prices")
 		var assets []database.Asset
 		err := db.Model(&assets).Select()
 		if err != nil {
