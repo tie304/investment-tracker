@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/tie304/investment/database"
+	"github.com/tie304/investment/http_server"
 )
 
 type AssetDataResponse struct {
@@ -24,9 +25,11 @@ type YahooResp struct {
 }
 
 const YahooBaseUrl = "https://query1.finance.yahoo.com/v7/finance/quote?=&symbols="
+
 func main() {
 	log.Println("main started")
 	database.InitDB()
+	http_server.InitServer()
 	db := database.Database
 	for {
 		log.Println("updating asset prices")
