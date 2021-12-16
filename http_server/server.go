@@ -20,6 +20,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func assetHandler(w http.ResponseWriter, r *http.Request) {
+	// create new asset
 	if r.Method == http.MethodPost {
 		var asset database.Asset
 		err := json.NewDecoder(r.Body).Decode(&asset)
@@ -36,6 +37,7 @@ func assetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusCreated)
 	}
+	// update asset qty
 	if r.Method == http.MethodPut {
 		var asset database.Asset
 		err := json.NewDecoder(r.Body).Decode(&asset)
