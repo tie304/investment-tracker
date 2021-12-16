@@ -25,6 +25,7 @@ type YahooResp struct {
 }
 
 const YahooBaseUrl = "https://query1.finance.yahoo.com/v7/finance/quote?=&symbols="
+const updateTime = 15 // 15 mins
 
 func main() {
 	log.Println("main started")
@@ -61,7 +62,7 @@ func main() {
 			}
 		}
 		log.Println("finished updating assets")
-		time.Sleep(2 * time.Minute)
+		time.Sleep(updateTime * time.Minute)
 
 	}
 
